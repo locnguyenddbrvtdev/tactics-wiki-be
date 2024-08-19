@@ -1,8 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -18,6 +21,7 @@ import { JwtAuth } from '@decorators/jwt-auth';
 import { IRequest } from '@ts/interfaces/req.interface';
 import { JwtRefreshTokenGuard } from './guards/jwt-refresh-token.guard';
 import { ChangePasswordDTO } from './dtos/change-password.dto';
+import { isEmail } from 'class-validator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -51,6 +55,19 @@ export class AuthController {
 
   @JwtAuth()
   @Post('change-password')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async changePassword(@Body() body: ChangePasswordDTO) {}
+  @HttpCode(HttpStatus.OK)
+  async changePassword(@Body() body: ChangePasswordDTO) {
+    await this.authService.changePassword(body);
+    // 401: CurrPassword is incorrect
+    // 400: DTO or currPass same as newPass
+  }
+
+  @Get('forget-password/:email')
+  @HttpCode(HttpStatus.OK)
+  async forgetPassword(@Param('email') email: string) {
+    if (!isEmail(email)) {
+      throw new BadRequestException('Invalid email');
+    }
+    await this.authService.forgetPassword(email);
+  }
 }

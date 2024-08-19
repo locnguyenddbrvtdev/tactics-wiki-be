@@ -1,7 +1,12 @@
 import * as bcrypt from 'bcryptjs';
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { isEmail } from 'class-validator';
 import { JwtService } from '@nestjs/jwt';
+import * as crypto from 'crypto';
 
 import { UsersService } from '@modules/models/users/users.service';
 import { User } from '@modules/models/users/enitities/users.entity';
@@ -15,6 +20,8 @@ import { Session } from './enities/session.enity';
 import { Repository } from 'typeorm';
 import { ClsService } from '@modules/shared/cls.service';
 import { LoggerService } from '@modules/core/logger/logger.service';
+import { ChangePasswordDTO } from './dtos/change-password.dto';
+import { MailService } from '@modules/infrastructure/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +32,7 @@ export class AuthService {
     @InjectRepository(Session)
     private readonly sessionRepo: Repository<Session>,
     private readonly loggerService: LoggerService,
+    private readonly mailService: MailService,
   ) {}
 
   async authenticateLogin(usernameOrEmail: string, passport: string) {
@@ -140,6 +148,34 @@ export class AuthService {
       { id: session.id },
       { logoutedAt: Date.now() },
     );
+  }
+
+  async changePassword(dto: ChangePasswordDTO) {
+    if (dto.newPassword === dto.currPassword) {
+      throw new BadRequestException(
+        'New password must be different from current password',
+      );
+    }
+    const user = this.clsService.getReq().user;
+    await this.verifyPlainContentWithHashedContent(
+      dto.currPassword,
+      user.password,
+    ).catch(() => {
+      throw new UnauthorizedException('Invalid credentials');
+    });
+    const hashedNewPassword = await bcrypt.hash(dto.newPassword, 10);
+    await this.userService.updatePassword(user.id, hashedNewPassword);
+  }
+
+  async forgetPassword(email: string) {
+    const user = await this.userService.findOneByEmail(email);
+    if (!user) {
+      return;
+    }
+    const newPassword = crypto.randomBytes(16).toString('base64url');
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    await this.userService.updatePassword(user.id, hashedNewPassword);
+    await this.mailService.sendRecoveryPasswordEmail(email, newPassword);
   }
 
   private generateJwtTokens(payload: ITokenPayload) {

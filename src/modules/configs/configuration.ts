@@ -34,10 +34,10 @@ export default () => ({
   //     user: process.env.MAIL_SERVER_USER,
   //     password: process.env.MAIL_SERVER_PASSWORD,
   //   },
-  //   mailAddress: {
-  //     admin: process.env.MAIL_ADDRESS_ADMIN,
-  //     auth: process.env.MAIL_ADDRESS_AUTH,
-  //     support: process.env.MAIL_ADDRESS_SUPPORT,
-  //     contact: process.env.MAIL_ADDRESS_CONTACT,
-  //   },
+  mailAddress: {
+    admin: process.env.MAIL_ADDRESS_ADMIN,
+    auth: process.env.MAIL_ADDRESS_AUTH,
+    support: process.env.MAIL_ADDRESS_SUPPORT,
+    contact: process.env.MAIL_ADDRESS_CONTACT,
+  },
 });

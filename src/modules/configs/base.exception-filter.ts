@@ -19,7 +19,10 @@ export class BaseExceptionFilter implements ExceptionFilter {
       statusCode: status,
       isSucess: false,
       message: exception.message,
-      data: null,
+      data:
+        exception.message === 'Bad Request Exception'
+          ? (exception.getResponse() as any)?.message
+          : null,
       path: request.url,
       timestamp: new Date(),
     } as IResponse<null>);

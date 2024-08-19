@@ -6,9 +6,17 @@ import { AppMiddleware } from '@app.middleware';
 import { ModelsModule } from '@modules/models/models.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { SharedModule } from '@modules/shared/shared.module';
+import { InfrastructureModule } from '@modules/infrastructure/infrastructure.module';
 
 @Module({
-  imports: [ConfigsModule, CoreModule, SharedModule, AuthModule, ModelsModule],
+  imports: [
+    ConfigsModule,
+    CoreModule,
+    SharedModule,
+    InfrastructureModule,
+    AuthModule,
+    ModelsModule,
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

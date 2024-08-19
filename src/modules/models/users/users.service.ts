@@ -27,4 +27,8 @@ export class UsersService {
       where: { id },
     });
   }
+
+  async updatePassword(id: number, newPassword: string) {
+    await this.userRepository.update({ id }, { password: newPassword });
+  }
 }
