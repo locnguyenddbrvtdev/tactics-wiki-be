@@ -16,6 +16,20 @@ services:
       POSTGRES_USER: tactics-wiki
       POSTGRES_DB: tactics-wiki
 
+  redis:
+    container_name: redis-tactics-wiki
+    image: bitnami/redis:latest
+    restart: unless-stopped
+    networks:
+      - tactics-wiki
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./db/redis:/bitnami/redis/data
+    environment:
+      # REDIS_PASSWORD: Pass@123456
+      ALLOW_EMPTY_PASSWORD: yes
+
 networks:
   tactics-wiki:
     driver: bridge

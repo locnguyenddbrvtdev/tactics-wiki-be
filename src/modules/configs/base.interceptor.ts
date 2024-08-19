@@ -9,15 +9,19 @@ import { map, tap } from 'rxjs/operators';
 
 import { LoggerService } from '@modules/core/logger/logger.service';
 import { IResponse } from '@ts/interfaces/response.interface';
+import { ClsService } from '@modules/shared/cls.service';
 
 @Injectable()
 export class BaseInterceptor implements NestInterceptor {
-  constructor(private readonly loggerService: LoggerService) {}
+  constructor(
+    private readonly loggerService: LoggerService,
+    private readonly clsService: ClsService,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const now = Date.now();
     const request = context.switchToHttp().getRequest();
-
+    this.clsService.setReq(request);
     return next
       .handle()
       .pipe(

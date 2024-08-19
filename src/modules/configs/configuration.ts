@@ -19,7 +19,10 @@ export default () => ({
       host: process.env.PG_DB_HOST,
       port: parseInt(process.env.PG_DB_PORT, 10) || 5432,
     },
-    redis: {},
+    redis: {
+      host: process.env.REDIS_DB_HOST,
+      port: parseInt(process.env.REDIS_DB_PORT, 10) || 6379,
+    },
   },
   //   google: {
   //     clientId: process.env.GOOGLE_CLIENT_ID,

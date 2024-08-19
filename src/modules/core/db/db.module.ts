@@ -1,8 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongooseModule } from '@nestjs/mongoose';
+import type { RedisClientOptions } from 'redis';
+import * as redisStore from 'cache-manager-redis-store';
+import { CacheModule } from '@nestjs/cache-manager';
+import { CacheService } from '../cache.service';
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -37,6 +42,18 @@ import { MongooseModule } from '@nestjs/mongoose';
       }),
       inject: [ConfigService],
     }),
+    CacheModule.registerAsync<RedisClientOptions>({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        store: redisStore,
+        host: configService.get<string>('db.redis.host'),
+        port: configService.get<number>('db.redis.port'),
+        // ttl: configService.get<number>('redis.ttl'),
+      }),
+      inject: [ConfigService],
+    }),
   ],
+  providers: [CacheService],
+  exports: [CacheService],
 })
 export class DbModule {}

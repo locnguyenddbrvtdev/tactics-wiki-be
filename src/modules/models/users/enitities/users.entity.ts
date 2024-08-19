@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 import { SoftDeleteEntity } from '@base/soft-delete.base.entity';
+import { Session } from '@modules/auth/enities/session.enity';
 
 @Entity({ name: 'users', orderBy: { id: 'ASC' } })
 export class User extends SoftDeleteEntity {
@@ -39,4 +40,13 @@ export class User extends SoftDeleteEntity {
 
   @Column({ type: 'boolean', default: false })
   isSuperAdmin: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  gender: string | null;
+
+  @Column({ type: 'date', nullable: true })
+  birthDate: Date | null;
+
+  @OneToMany(() => Session, (session) => session.user)
+  sessions: Session[];
 }

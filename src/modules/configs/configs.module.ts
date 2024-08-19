@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 
 import configurations from './configuration';
 import { BaseInterceptor } from './base.interceptor';
+import { BaseExceptionFilter } from './base.exception-filter';
 
 @Module({
   imports: [
@@ -23,6 +24,9 @@ import { BaseInterceptor } from './base.interceptor';
       },
     }),
   ],
-  providers: [{ provide: APP_INTERCEPTOR, useClass: BaseInterceptor }],
+  providers: [
+    { provide: APP_INTERCEPTOR, useClass: BaseInterceptor },
+    { provide: APP_FILTER, useClass: BaseExceptionFilter },
+  ],
 })
 export class ConfigsModule {}
