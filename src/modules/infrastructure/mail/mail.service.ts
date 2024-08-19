@@ -35,6 +35,30 @@ export class MailService {
     });
   }
 
+  async sendVerifyEmail(email: string, code: string) {
+    const templatePath = path.join(
+      __dirname,
+      '..',
+      'templates',
+      'auth',
+      'verify-email',
+      'index.hbs',
+    );
+    const teamplateSrc = fs.readFileSync(templatePath, 'utf-8');
+    if (!teamplateSrc) throw new Error('Template not found');
+    const template = handlebars.compile(teamplateSrc.toString());
+    const html = template({
+      url: `${process.env.FE_URL}/auth/verify-email?code=${code}`,
+    });
+    await this.sendEmail({
+      from: this.configService.get<string>('mailAddress.auth'),
+      to: email,
+      subject: 'Xác thực email',
+      text: 'Xác thực email',
+      html,
+    });
+  }
+
   private async sendEmail({
     from,
     to,

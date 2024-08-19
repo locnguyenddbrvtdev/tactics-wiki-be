@@ -1,12 +1,16 @@
 import * as bcrypt from 'bcryptjs';
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { isEmail } from 'class-validator';
 import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 import { UsersService } from '@modules/models/users/users.service';
 import { User } from '@modules/models/users/enitities/users.entity';
@@ -15,13 +19,14 @@ import {
   access_token_private_key,
   refresh_token_private_key,
 } from '@constraints/jwt.constraint';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Session } from './enities/session.enity';
-import { Repository } from 'typeorm';
 import { ClsService } from '@modules/shared/cls.service';
 import { LoggerService } from '@modules/core/logger/logger.service';
 import { ChangePasswordDTO } from './dtos/change-password.dto';
 import { MailService } from '@modules/infrastructure/mail/mail.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { VerifyEmail } from './schemas/verify-email.schema';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +38,8 @@ export class AuthService {
     private readonly sessionRepo: Repository<Session>,
     private readonly loggerService: LoggerService,
     private readonly mailService: MailService,
+    @InjectModel('verify-email')
+    private readonly verifyEmailModel: Model<VerifyEmail>,
   ) {}
 
   async authenticateLogin(usernameOrEmail: string, passport: string) {
@@ -176,6 +183,28 @@ export class AuthService {
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     await this.userService.updatePassword(user.id, hashedNewPassword);
     await this.mailService.sendRecoveryPasswordEmail(email, newPassword);
+  }
+
+  async sendVerifyEmailUser(email: string) {
+    let code = crypto.randomBytes(64).toString('base64url') + Date.now();
+    const user = await this.userService.findOneByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.verifyEmailModel.create({
+      userId: user.id,
+      code,
+    });
+    await this.mailService.sendVerifyEmail(email, code);
+  }
+
+  async verifyEmailUser(code: string) {
+    const verifyEmail = await this.verifyEmailModel.findOne({ code });
+    if (!verifyEmail) {
+      throw new ForbiddenException('Link expired or invalid');
+    }
+    await this.userService.verifiedEmail(verifyEmail.userId);
+    await this.verifyEmailModel.findByIdAndDelete(verifyEmail._id);
   }
 
   private generateJwtTokens(payload: ITokenPayload) {
