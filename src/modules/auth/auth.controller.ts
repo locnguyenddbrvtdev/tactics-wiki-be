@@ -70,4 +70,19 @@ export class AuthController {
     }
     await this.authService.forgetPassword(email);
   }
+
+  @Get('verify-email/:email')
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(@Param('email') email: string) {
+    if (!isEmail(email)) {
+      throw new BadRequestException('Invalid email');
+    }
+    await this.authService.sendVerifyEmailUser(email);
+  }
+
+  @Post('verify-email/:code')
+  @HttpCode(HttpStatus.OK)
+  async verifyEmailCode(@Param('code') code: string) {
+    await this.authService.verifyEmailUser(code);
+  }
 }
