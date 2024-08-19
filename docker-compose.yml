@@ -1,0 +1,21 @@
+version: '3.2'
+
+services:
+  postgres:
+    container_name: postgres-tactics-wiki
+    image: postgres:latest
+    restart: unless-stopped
+    networks:
+      - tactics-wiki
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: Pass@123456
+      POSTGRES_USER: tactics-wiki
+      POSTGRES_DB: tactics-wiki
+
+networks:
+  tactics-wiki:
+    driver: bridge
