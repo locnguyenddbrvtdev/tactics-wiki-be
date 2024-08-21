@@ -58,6 +58,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async changePassword(@Body() body: ChangePasswordDTO) {
     await this.authService.changePassword(body);
+    // TODO: Handle logout all devices
+
     // 401: CurrPassword is incorrect
     // 400: DTO or currPass same as newPass
   }

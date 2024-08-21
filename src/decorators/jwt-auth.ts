@@ -32,7 +32,6 @@ export function JwtSuperAdminAuth() {
   return applyDecorators(
     ApiBearerAuth(),
     UseGuards(JwtAccessTokenGuard),
-    UseGuards(AdminGuard),
     UseGuards(SuperAdminGuard),
   );
 }

@@ -1,10 +1,16 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
 import { User } from './enitities/users.entity';
 import { CreateUserDTO } from './dtos/create-user.dto';
+import { EnumUserRoleDTO } from './dtos/update-role.dto';
 
 @Injectable()
 export class UsersService {
@@ -51,5 +57,26 @@ export class UsersService {
       password: hashedPassword,
       username: email.split('@')[0] + Date.now(),
     });
+  }
+
+  async updateRole(id: number, role: EnumUserRoleDTO) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+    switch (role) {
+      case EnumUserRoleDTO.ADMIN:
+        await this.userRepository.update(
+          { id },
+          { isAdmin: true, isSuperAdmin: false },
+        );
+        break;
+      case EnumUserRoleDTO.USER:
+        await this.userRepository.update(
+          { id },
+          { isAdmin: false, isSuperAdmin: false },
+        );
+        break;
+      default:
+        throw new BadRequestException('Role not available');
+    }
   }
 }
