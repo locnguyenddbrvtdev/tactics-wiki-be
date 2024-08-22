@@ -20,6 +20,12 @@ export class Set {
   @OneToMany(() => Version, (version) => version.set)
   versions: Version[];
 
+  @Column({ type: 'timestamp', nullable: true })
+  startAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  endAt: Date;
+
   @Column({ type: 'boolean', default: true })
   isPublished: boolean;
 }

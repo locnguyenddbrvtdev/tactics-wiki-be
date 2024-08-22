@@ -19,7 +19,7 @@ export class Trait extends Resource {
   @Column({ type: 'text' })
   image: string;
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'jsonb', nullable: true })
   effects: {
     maxUnits: number;
     minUnits: number;

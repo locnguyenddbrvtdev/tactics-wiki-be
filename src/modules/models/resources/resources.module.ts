@@ -5,6 +5,7 @@ import { ChampionsModule } from './champions/champions.module';
 import { TraitsModule } from './traits/traits.module';
 import { AugmentsModule } from './augments/augments.module';
 import { ItemsModule } from './items/items.module';
+import { QueuesModule } from './queues/queues.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ItemsModule } from './items/items.module';
     TraitsModule,
     AugmentsModule,
     ItemsModule,
+    QueuesModule,
   ],
 })
 export class ResourcesModule {}

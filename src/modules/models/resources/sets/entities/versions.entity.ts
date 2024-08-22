@@ -13,6 +13,7 @@ import { Champion } from '@modules/models/resources/champions/entities/champions
 import { Trait } from '@modules/models/resources/traits/entities/traits.entity';
 import { Augment } from '../../augments/entities/augments.entity';
 import { Item } from '../../items/entities/items.entity';
+import { Queue } from '../../queues/enities/queue.enitity';
 
 @Entity({ name: 'versions' })
 export class Version {
@@ -34,11 +35,14 @@ export class Version {
   @Column({ type: 'timestamp', nullable: true })
   endAt: Date;
 
-  @OneToOne(() => VersionUpdate)
+  @OneToOne(() => VersionUpdate, { nullable: true })
   preUpdate: VersionUpdate;
 
-  @OneToOne(() => VersionUpdate)
+  @OneToOne(() => VersionUpdate, { nullable: true })
   nextUpdate: VersionUpdate;
+
+  @OneToOne(() => Queue, { nullable: false })
+  queue: Queue;
 
   @OneToMany(() => Champion, (champion) => champion.version)
   champions: Champion[];

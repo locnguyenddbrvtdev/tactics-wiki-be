@@ -8,7 +8,7 @@ export class AppMiddleware implements NestMiddleware {
   constructor(private readonly loggerService: LoggerService) {}
 
   use(req: Request, res: Response, next: NextFunction) {
-    this.loggerService.reqInfo(req.originalUrl);
+    // this.loggerService.reqInfo(req.originalUrl);
     next();
   }
 }

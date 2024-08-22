@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import * as express from 'express';
 import * as path from 'path';
 import { WinstonModule } from 'nest-winston';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 import { swaggerConfig } from '@modules/configs/swagger.config';
 import winstonOption from '@modules/configs/logger.config';
@@ -35,6 +36,7 @@ async function bootstrap() {
     methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'],
     credentials: true,
   });
+  app.useWebSocketAdapter(new IoAdapter(app));
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
   swaggerConfig(app, 'Tactics Wiki');
