@@ -12,24 +12,32 @@ export class TraitsService {
     @InjectRepository(Trait) private readonly traitRepo: Repository<Trait>,
   ) {}
 
-  async createTraits(dto: {
+  async findTrait(dto: {
     riotId: string;
-    name: string;
-    language: EnumLanguage;
+    lang: EnumLanguage;
     version: Version;
-    desc: string;
-    image: string;
   }) {
-    const existedTrait = await this.traitRepo.findOne({
+    return await this.traitRepo.findOne({
       where: {
         riotId: dto.riotId,
         version: dto.version,
-        language: dto.language,
+        language: dto.lang,
       },
     });
-    if (existedTrait) {
-      throw new Error('Trait existed');
-    }
+  }
+
+  async createTraits(dto: any) {
     return await this.traitRepo.save(dto);
+  }
+
+  async findForChampFetch({
+    name,
+  }: {
+    name: string;
+    version: Version;
+    language: EnumLanguage;
+  }) {
+    const trait = await this.traitRepo.findOne({ where: { name } });
+    return trait;
   }
 }

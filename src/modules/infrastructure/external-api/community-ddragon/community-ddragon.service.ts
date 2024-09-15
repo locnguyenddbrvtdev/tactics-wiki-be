@@ -38,4 +38,18 @@ export class CommunityDDragonService {
     );
     return response.data;
   }
+
+  async getImage(path: string) {
+    const response = await firstValueFrom(
+      this.httpAxiosService.get(path, { responseType: 'arraybuffer' }).pipe(
+        catchError((err: AxiosError) => {
+          throw new ServiceUnavailableException(
+            'Community API is not available',
+          );
+        }),
+      ),
+    );
+
+    return response.data;
+  }
 }

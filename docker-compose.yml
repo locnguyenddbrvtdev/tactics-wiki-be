@@ -30,6 +30,21 @@ services:
       # REDIS_PASSWORD: Pass@123456
       ALLOW_EMPTY_PASSWORD: yes
 
+  mongo:
+    container_name: mongo-tactics-wiki
+    image: mongo:latest
+    restart: unless-stopped
+    networks:
+      - tactics-wiki
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./db/mongo:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password@123
+      MONGO_INITDB_DATABASE: tactics-wiki
+
 networks:
   tactics-wiki:
     driver: bridge

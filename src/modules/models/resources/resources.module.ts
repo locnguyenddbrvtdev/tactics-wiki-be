@@ -6,6 +6,7 @@ import { TraitsModule } from './traits/traits.module';
 import { AugmentsModule } from './augments/augments.module';
 import { ItemsModule } from './items/items.module';
 import { QueuesModule } from './queues/queues.module';
+import { RegionPortalsModule } from './region-portals/region-portal.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { QueuesModule } from './queues/queues.module';
     AugmentsModule,
     ItemsModule,
     QueuesModule,
+    RegionPortalsModule,
   ],
 })
 export class ResourcesModule {}

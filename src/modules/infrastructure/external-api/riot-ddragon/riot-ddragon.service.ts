@@ -174,6 +174,37 @@ export class RiotDDragonService {
     return response.data;
   }
 
+  async igetItemImage({
+    version,
+    imagePath,
+  }: {
+    version: string;
+    imagePath: string;
+  }) {
+    await this.checkExistVersion(version);
+    const response = await firstValueFrom(
+      this.httpAxiosService
+        .get(`cdn/${version}/img/tft-item/${imagePath}`, {
+          responseType: 'arraybuffer',
+        })
+        .pipe(
+          catchError((err: AxiosError) => {
+            this.loggerService.error(
+              'Riot DDragon API is not available' +
+                err.name +
+                err.code +
+                err.message +
+                err.stack,
+            );
+            throw new ServiceUnavailableException(
+              'Riot DDragon API is not available',
+            );
+          }),
+        ),
+    );
+    return response.data;
+  }
+
   async getQueues({
     version,
     language,
@@ -333,13 +364,6 @@ export class RiotDDragonService {
         })
         .pipe(
           catchError((err: AxiosError) => {
-            // this.loggerService.error(
-            //   'Riot DDragon API is not available' +
-            //     err.name +
-            //     err.code +
-            //     err.message +
-            //     err.stack,
-            // );
             throw new ServiceUnavailableException(
               'Riot DDragon API is not available',
             );

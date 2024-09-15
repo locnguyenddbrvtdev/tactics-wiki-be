@@ -14,6 +14,7 @@ import { Trait } from '@modules/models/resources/traits/entities/traits.entity';
 import { Augment } from '../../augments/entities/augments.entity';
 import { Item } from '../../items/entities/items.entity';
 import { Queue } from '../../queues/enities/queue.enitity';
+import { RegionPortal } from '../../region-portals/enities/region-portal.enitity';
 
 @Entity({ name: 'versions' })
 export class Version {
@@ -55,4 +56,7 @@ export class Version {
 
   @OneToMany(() => Item, (item) => item.version)
   items: Item[];
+
+  @OneToMany(() => RegionPortal, (regionPortal) => regionPortal.version)
+  regionPortal: RegionPortal;
 }
